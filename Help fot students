@@ -42,3 +42,35 @@ def quiz(materia):
 
 if __name__ == '__main__':
     app.run(debug=True)
+<!DOCTYPE html>
+<html>
+<head><title>Quiz de {{ materia }}</title></head>
+<body>
+  <h1>Quiz de {{ materia }}</h1>
+  <form method="POST">
+    {% for i, p in enumerate(preguntas) %}
+      <div>
+        <p>{{ p.pregunta }}</p>
+        {% for opcion in p.opciones %}
+          <label>
+            <input type="radio" name="pregunta_{{ i }}" value="{{ opcion }}" required> {{ opcion }}
+          </label><br>
+        {% endfor %}
+      </div>
+    {% endfor %}
+    <button type="submit">Enviar</button>
+  </form>
+</body>
+</html>
+<!DOCTYPE html>
+<html>
+<head><title>Inicio</title></head>
+<body>
+  <h1>Selecciona una materia</h1>
+  <ul>
+    {% for materia in materias %}
+      <li><a href="{{ url_for('quiz', materia=materia) }}">{{ materia }}</a></li>
+    {% endfor %}
+  </ul>
+</body>
+</html>
