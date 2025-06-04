@@ -1,0 +1,44 @@
+from flask import Flask, render_template, request, redirect, url_for
+import random
+
+app = Flask(__name__)
+
+# Base de datos de preguntas
+preguntas = {
+    "Matemáticas": [
+        {"pregunta": "¿Cuánto es 7 x 8?", "opciones": ["54", "56", "64"], "respuesta": "56"},
+        {"pregunta": "¿Qué es una raíz cuadrada?", "opciones": ["Una operación", "Una planta", "Un número primo"], "respuesta": "Una operación"}
+    ],
+    "Historia": [
+        {"pregunta": "¿En qué año fue la Revolución Francesa?", "opciones": ["1789", "1810", "1492"], "respuesta": "1789"},
+        {"pregunta": "¿Quién descubrió América?", "opciones": ["Cristóbal Colón", "Napoleón", "Simón Bolívar"], "respuesta": "Cristóbal Colón"}
+    ],
+    "Biología": [
+        {"pregunta": "¿Cuál es la célula más pequeña del cuerpo humano?", "opciones": ["Glóbulo rojo", "Neurona", "Célula muscular"], "respuesta": "Glóbulo rojo"},
+        {"pregunta": "¿Qué órgano bombea la sangre?", "opciones": ["Pulmón", "Riñón", "Corazón"], "respuesta": "Corazón"}
+    ]
+}
+
+@app.route('/')
+def inicio():
+    materias = list(preguntas.keys())
+    return render_template('inicio.html', materias=materias)
+
+@app.route('/quiz/<materia>', methods=['GET', 'POST'])
+def quiz(materia):
+    if request.method == 'POST':
+        respuestas_usuario = request.form
+        correctas = 0
+        total = len(preguntas[materia])
+        for i, p in enumerate(preguntas[materia]):
+            if respuestas_usuario.get(f'pregunta_{i}') == p['respuesta']:
+                correctas += 1
+        return render_template('resultado.html', puntaje=correctas, total=total, materia=materia)
+    else:
+        preguntas_materia = preguntas[materia]
+        for p in preguntas_materia:
+            random.shuffle(p['opciones'])
+        return render_template('quiz.html', materia=materia, preguntas=preguntas_materia)
+
+if __name__ == '__main__':
+    app.run(debug=True)
